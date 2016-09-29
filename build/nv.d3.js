@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.4-dev (https://github.com/novus/nvd3) 2016-09-26 */
+/* nvd3 version 1.8.4-dev (https://github.com/novus/nvd3) 2016-09-29 */
 (function(){
 
 // set up main nv object
@@ -15138,7 +15138,12 @@ nv.models.sunburst = function() {
             //reverse the drawing order so that the labels of inner
             //arcs are drawn on top of the outer arcs.
             var nodes = partition.nodes(data[0]).reverse()
-
+            nodes = nodes.filter(function(n){
+                console.log(n);
+                if(n.display === false)
+                    return false;
+                return true;
+            });
             storeRetrievePrevPositions(nodes);
             var cG = wrap.selectAll('.arc-container').data(nodes, key)
 
@@ -15432,4 +15437,3 @@ nv.models.sunburstChart = function() {
 
 nv.version = "1.8.4-dev";
 })();
-//# sourceMappingURL=nv.d3.js.map

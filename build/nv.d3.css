@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.4-dev (https://github.com/novus/nvd3) 2016-09-26 */
+/* nvd3 version 1.8.4-dev (https://github.com/novus/nvd3) 2016-09-29 */
 .nvd3 .nv-axis {
     pointer-events:none;
     opacity: 1;
@@ -289,11 +289,11 @@ svg.nvd3-svg {
 
 
 .nvd3 text {
-    font: normal 12px Arial;
+    font: normal 12px Arial, sans-serif;
 }
 
 .nvd3 .title {
-    font: bold 14px Arial;
+    font: bold 14px Arial, sans-serif;
 }
 
 .nvd3 .nv-background {
@@ -540,7 +540,7 @@ svg.nvd3-svg {
     z-index: 10000;
     display: block;
 
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     font-size: 13px;
     text-align: left;
     pointer-events: none;
