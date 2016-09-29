@@ -232,7 +232,12 @@ nv.models.sunburst = function() {
             //reverse the drawing order so that the labels of inner
             //arcs are drawn on top of the outer arcs.
             var nodes = partition.nodes(data[0]).reverse()
-
+            nodes = nodes.filter(function(n){
+                console.log(n);
+                if(n.display === false)
+                    return false;
+                return true;
+            });
             storeRetrievePrevPositions(nodes);
             var cG = wrap.selectAll('.arc-container').data(nodes, key)
 
