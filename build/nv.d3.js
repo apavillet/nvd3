@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/* nvd3 version 1.8.4-dev (https://github.com/novus/nvd3) 2016-09-29 */
-=======
-/* nvd3 version 1.8.5-dev (https://github.com/novus/nvd3) 2017-02-15 */
->>>>>>> upstream/master
+/* nvd3 version 1.8.5-dev (https://github.com/novus/nvd3) 2017-03-20 */
 (function(){
 
 // set up main nv object
@@ -1594,6 +1590,27 @@ nv.utils.arrayEquals = function (array1, array2) {
     }
     return true;
 };
+
+/*
+ Check if a point within an arc
+ */
+nv.utils.pointIsInArc = function(pt, ptData, d3Arc) {
+    // Center of the arc is assumed to be 0,0
+    // (pt.x, pt.y) are assumed to be relative to the center
+    var r1 = d3Arc.innerRadius()(ptData), // Note: Using the innerRadius
+      r2 = d3Arc.outerRadius()(ptData),
+      theta1 = d3Arc.startAngle()(ptData),
+      theta2 = d3Arc.endAngle()(ptData);
+
+    var dist = pt.x * pt.x + pt.y * pt.y,
+      angle = Math.atan2(pt.x, -pt.y); // Note: different coordinate system.
+
+    angle = (angle < 0) ? (angle + Math.PI * 2) : angle;
+
+    return (r1 * r1 <= dist) && (dist <= r2 * r2) &&
+      (theta1 <= angle) && (angle <= theta2);
+};
+
 nv.models.axis = function() {
     "use strict";
 
@@ -11340,6 +11357,7 @@ nv.models.pie = function() {
         , labelsOutside = false
         , labelType = "key"
         , labelThreshold = .02 //if slice percentage is under this, don't show label
+        , hideOverlapLabels = false //Hide labels that don't fit in slice
         , donut = false
         , title = false
         , growOnHover = true
@@ -11661,6 +11679,44 @@ nv.models.pie = function() {
                         return label;
                     })
                 ;
+
+                if (hideOverlapLabels) {
+                    pieLabels
+                        .each(function (d, i) {
+                            if (!this.getBBox) return;
+                            var bb = this.getBBox(),
+                            center = labelsArc[i].centroid(d);
+                            var topLeft = {
+                              x : center[0] + bb.x,
+                              y : center[1] + bb.y
+                            };
+
+                            var topRight = {
+                              x : topLeft.x + bb.width,
+                              y : topLeft.y
+                            };
+
+                            var bottomLeft = {
+                              x : topLeft.x,
+                              y : topLeft.y + bb.height
+                            };
+
+                            var bottomRight = {
+                              x : topLeft.x + bb.width,
+                              y : topLeft.y + bb.height
+                            };
+
+                            d.visible = nv.utils.pointIsInArc(topLeft, d, arc) &&
+                            nv.utils.pointIsInArc(topRight, d, arc) &&
+                            nv.utils.pointIsInArc(bottomLeft, d, arc) &&
+                            nv.utils.pointIsInArc(bottomRight, d, arc);
+                        })
+                        .style('display', function (d) {
+                            return d.visible ? null : 'none';
+                        })
+                    ;
+                }
+
             }
 
 
@@ -11702,6 +11758,7 @@ nv.models.pie = function() {
         title:      {get: function(){return title;}, set: function(_){title=_;}},
         titleOffset:    {get: function(){return titleOffset;}, set: function(_){titleOffset=_;}},
         labelThreshold: {get: function(){return labelThreshold;}, set: function(_){labelThreshold=_;}},
+        hideOverlapLabels: {get: function(){return hideOverlapLabels;}, set: function(_){hideOverlapLabels=_;}},
         valueFormat:    {get: function(){return valueFormat;}, set: function(_){valueFormat=_;}},
         x:          {get: function(){return getX;}, set: function(_){getX=_;}},
         id:         {get: function(){return id;}, set: function(_){id=_;}},
@@ -14785,7 +14842,7 @@ nv.models.stackedAreaChart = function() {
 
             interactiveLayer.dispatch.on('elementMousemove', function(e) {
                 stacked.clearHighlights();
-                var singlePoint, pointIndex, pointXLocation, allData = [], valueSum = 0, allNullValues = true;
+                var singlePoint, pointIndex, pointXLocation, allData = [], valueSum = 0, allNullValues = true, atleastOnePoint = false;
                 data
                     .filter(function(series, i) {
                         series.seriesIndex = i;
@@ -14797,6 +14854,7 @@ nv.models.stackedAreaChart = function() {
                         var pointYValue = chart.y()(point, pointIndex);
                         if (pointYValue != null && pointYValue > 0) {
                             stacked.highlightPoint(i, pointIndex, true);
+                            atleastOnePoint = true;
                         }
                     
                         // Draw at least one point if all values are zero.
@@ -15352,6 +15410,13 @@ nv.models.sunburst = function() {
                     dispatch.elementMousemove({
                         data: d
                     });
+                }).
+                attr('class', function(d) {
+                    if(d.class) {
+                        return d.class
+                    } else {
+                        return false;
+                    }
                 });
 
             ///Iterating via each and selecting based on the this
@@ -15596,11 +15661,6 @@ nv.models.sunburstChart = function() {
 
 };
 
-<<<<<<< HEAD
-nv.version = "1.8.4-dev";
-})();
-=======
 nv.version = "1.8.5-dev";
 })();
 //# sourceMappingURL=nv.d3.js.map
->>>>>>> upstream/master
