@@ -18,7 +18,13 @@ nv.models.sunburst = function() {
         , labelFormat = function(d){if(mode === 'count'){return d.name + ' #' + d.value}else{return d.name + ' ' + (d.value || d.size)}}
         , labelThreshold = 0.02
         , sort = function(d1, d2){return d1.name > d2.name;}
-        , key = function(d,i){return d.name;}
+        , key = function(d,i){
+            if (d.parent !== undefined) {
+                return d.name + '-' + d.parent.name + '-' + i;
+            } else {
+                return d.name;
+            }
+        }
         , groupColorByParent = true
         , duration = 500
         , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMousemove', 'elementMouseover', 'elementMouseout', 'renderEnd');
@@ -285,6 +291,13 @@ nv.models.sunburst = function() {
                     dispatch.elementMousemove({
                         data: d
                     });
+                }).
+                attr('class', function(d) {
+                    if(d.class) {
+                        return d.class
+                    } else {
+                        return false;
+                    }
                 });
 
             ///Iterating via each and selecting based on the this
