@@ -8,16 +8,20 @@
     <script src="lib/stream_layers.js"></script>
 
     <style>
-        html, body, svg {
+        html, body, svg#test1 {
             margin: 0px;
             padding: 0px;
             height: 100%;
             width: 100%;
         }
+        .false {
+            fill: url("#diagonal-stripe-1") !important;
+        }
     </style>
 </head>
 <body>
-
+<svg height="10px" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <pattern id="diagonal-stripe-1" patternUnits="userSpaceOnUse" width="10" height="10"> <image xlink:href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScvPgogIDxwYXRoIGQ9J00tMSwxIGwyLC0yCiAgICAgICAgICAgTTAsMTAgbDEwLC0xMAogICAgICAgICAgIE05LDExIGwyLC0yJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEnLz4KPC9zdmc+Cg==" x="0" y="0" width="10" height="10"> </image> </pattern> </defs> </svg>
+<svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <pattern id="dots-3" patternUnits="userSpaceOnUse" width="10" height="10"> <image xlink:href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+CiAgPHJlY3Qgd2lkdGg9JzEwJyBoZWlnaHQ9JzEwJyBmaWxsPSd3aGl0ZScgLz4KICA8cmVjdCB4PScwJyB5PScwJyB3aWR0aD0nMycgaGVpZ2h0PSczJyBmaWxsPSdibGFjaycgLz4KPC9zdmc+Cg==" x="0" y="0" width="10" height="10"> </image> </pattern> </defs> </svg>
 <svg id="test1"></svg>
 
 <script>
@@ -75,13 +79,13 @@
                 {
                     "name": "animate",
                     "children": [
-                        {"name": "Easing", "size": 17010},
+                        {"name": "Easing", "size": 17010, "class": "Pending Transit_sub"},
                         {"name": "FunctionSequence", "size": 5842},
                         {
                             "name": "interpolate",
                             "children": [
-                                {"name": "ArrayInterpolator", "size": 1983},
-                                {"name": "ColorInterpolator", "size": 2047},
+                                {"name": "ArrayInterpolator", "size": 1983, "class": "Pending"},
+                                {"name": "ColorInterpolator", "size": 2047, "class": "Transit_sub"},
                                 {"name": "DateInterpolator", "size": 1375},
                                 {"name": "Interpolator", "size": 8746},
                                 {"name": "MatrixInterpolator", "size": 2202},
@@ -422,5 +426,6 @@
     }
 
 </script>
+
 </body>
 </html>

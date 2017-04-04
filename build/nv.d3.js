@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.5-dev (https://github.com/novus/nvd3) 2017-03-20 */
+/* nvd3 version 1.8.5-dev (https://github.com/novus/nvd3) 2017-04-04 */
 (function(){
 
 // set up main nv object
@@ -9920,8 +9920,12 @@ nv.models.multiChart = function() {
                 if (extraValue1BarStacked.length > 0)
                     extraValue1BarStacked = extraValue1BarStacked.reduce(function(a,b){
                         return a.map(function(aVal,i){return {x: aVal.x, y: aVal.y + b[i].y}})
-                    }).concat([{x:0, y:0}]);
+                    });
             }
+            if (dataBars1.length) {
+                extraValue1BarStacked.push({x:0, y:0});
+            }
+            
             var extraValue2BarStacked = [];
             if (bars2.stacked() && dataBars2.length) {
                 var extraValue2BarStacked = dataBars2.filter(function(d){return !d.disabled}).map(function(a){return a.values});
@@ -9929,7 +9933,10 @@ nv.models.multiChart = function() {
                 if (extraValue2BarStacked.length > 0)
                     extraValue2BarStacked = extraValue2BarStacked.reduce(function(a,b){
                         return a.map(function(aVal,i){return {x: aVal.x, y: aVal.y + b[i].y}})
-                    }).concat([{x:0, y:0}]);
+                    });
+            }
+            if (dataBars2.length) {
+                extraValue2BarStacked.push({x:0, y:0});
             }
             
             yScale1 .domain(yDomain1 || d3.extent(d3.merge(series1).concat(extraValue1BarStacked), function(d) { return d.y } ))
@@ -15129,7 +15136,7 @@ nv.models.sunburst = function() {
         , width = 600
         , height = 600
         , mode = "count"
-        , modes = {count: function(d) { return 1; }, value: function(d) { return d.value || d.size }, size: function(d) { return d.value || d.size }}
+        , modes = {count: function(d) { return 1; }, value: function(d) { return d.value || d.size }, size: function(d) { return d.size || d.value }}
         , id = Math.floor(Math.random() * 10000) //Create semi-unique ID in case user doesn't select one
         , container = null
         , color = nv.utils.defaultColor()
@@ -15352,13 +15359,12 @@ nv.models.sunburst = function() {
                 });
             });
 
-            partition.value(modes[mode] || modes["count"]);
-
+            //partition.value(modes[mode] || modes["count"]);
+            partition.value(modes["size"]);
             //reverse the drawing order so that the labels of inner
             //arcs are drawn on top of the outer arcs.
             var nodes = partition.nodes(data[0]).reverse()
             nodes = nodes.filter(function(n){
-                console.log(n);
                 if(n.display === false)
                     return false;
                 return true;
@@ -15371,6 +15377,24 @@ nv.models.sunburst = function() {
                 .append("g")
                 .attr("class",'arc-container')
 
+             cGE.append("path")
+                    .attr("d", arc)
+                    .style("fill", 'url("#dots-3")')
+                    .attr("opacity", function(d) {
+                        if(d.class) {
+                            return d.class.indexOf('Pending') > -1 ? 0.3 : 0;
+                        }
+                        return 0;
+                    });
+                cGE.append("path")
+                    .attr("d", arc)
+                    .style("fill", 'url("#diagonal-stripe-1")')
+                    .attr("opacity", function(d) {
+                        if(d.class){
+                            return d.class.indexOf('Transit_sub') > -1 ? 0.3 : 0;
+                        }
+                        return -1;
+                    });
             cGE.append("path")
                 .attr("d", arc)
                 .style("fill", function (d) {
@@ -15385,6 +15409,14 @@ nv.models.sunburst = function() {
                     }
                 })
                 .style("stroke", "#FFF")
+                 .attr("opacity", function(d) {
+                        if(d.class){
+                            if(d.class.indexOf('Transit_sub') > - 1 || d.class.indexOf('Pending') > - 1) {
+                                return 0.6;
+                            }
+                        }
+                        return 1;
+                    })
                 .on("click", function(d,i){
                     zoomClick(d);
                     dispatch.elementClick({
@@ -15401,7 +15433,14 @@ nv.models.sunburst = function() {
                     });
                 })
                 .on('mouseout', function(d,i){
-                    d3.select(this).classed('hover', false).style('opacity', 1);
+                    d3.select(this).classed('hover', false).style('opacity', function(d) {
+                         if(d.class){
+                            if(d.class.indexOf('Transit_sub') > - 1 || d.class.indexOf('Pending') > - 1) {
+                                return 0.6;
+                            }
+                        }
+                        return 1;
+                    });
                     dispatch.elementMouseout({
                         data: d
                     });
@@ -15415,9 +15454,10 @@ nv.models.sunburst = function() {
                     if(d.class) {
                         return d.class
                     } else {
-                        return false;
+                        return "";
                     }
                 });
+
 
             ///Iterating via each and selecting based on the this
             ///makes it work ... a cG.selectAll('path') doesn't.

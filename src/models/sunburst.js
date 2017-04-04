@@ -10,7 +10,7 @@ nv.models.sunburst = function() {
         , width = 600
         , height = 600
         , mode = "count"
-        , modes = {count: function(d) { return 1; }, value: function(d) { return d.value || d.size }, size: function(d) { return d.value || d.size }}
+        , modes = {count: function(d) { return 1; }, value: function(d) { return d.value || d.size }, size: function(d) { return d.size || d.value }}
         , id = Math.floor(Math.random() * 10000) //Create semi-unique ID in case user doesn't select one
         , container = null
         , color = nv.utils.defaultColor()
@@ -233,13 +233,12 @@ nv.models.sunburst = function() {
                 });
             });
 
-            partition.value(modes[mode] || modes["count"]);
-
+            //partition.value(modes[mode] || modes["count"]);
+            partition.value(modes["size"]);
             //reverse the drawing order so that the labels of inner
             //arcs are drawn on top of the outer arcs.
             var nodes = partition.nodes(data[0]).reverse()
             nodes = nodes.filter(function(n){
-                console.log(n);
                 if(n.display === false)
                     return false;
                 return true;
@@ -252,6 +251,24 @@ nv.models.sunburst = function() {
                 .append("g")
                 .attr("class",'arc-container')
 
+             cGE.append("path")
+                    .attr("d", arc)
+                    .style("fill", 'url("#dots-3")')
+                    .attr("opacity", function(d) {
+                        if(d.class) {
+                            return d.class.indexOf('Pending') > -1 ? 0.3 : 0;
+                        }
+                        return 0;
+                    });
+                cGE.append("path")
+                    .attr("d", arc)
+                    .style("fill", 'url("#diagonal-stripe-1")')
+                    .attr("opacity", function(d) {
+                        if(d.class){
+                            return d.class.indexOf('Transit_sub') > -1 ? 0.3 : 0;
+                        }
+                        return -1;
+                    });
             cGE.append("path")
                 .attr("d", arc)
                 .style("fill", function (d) {
@@ -266,6 +283,14 @@ nv.models.sunburst = function() {
                     }
                 })
                 .style("stroke", "#FFF")
+                 .attr("opacity", function(d) {
+                        if(d.class){
+                            if(d.class.indexOf('Transit_sub') > - 1 || d.class.indexOf('Pending') > - 1) {
+                                return 0.6;
+                            }
+                        }
+                        return 1;
+                    })
                 .on("click", function(d,i){
                     zoomClick(d);
                     dispatch.elementClick({
@@ -282,7 +307,14 @@ nv.models.sunburst = function() {
                     });
                 })
                 .on('mouseout', function(d,i){
-                    d3.select(this).classed('hover', false).style('opacity', 1);
+                    d3.select(this).classed('hover', false).style('opacity', function(d) {
+                         if(d.class){
+                            if(d.class.indexOf('Transit_sub') > - 1 || d.class.indexOf('Pending') > - 1) {
+                                return 0.6;
+                            }
+                        }
+                        return 1;
+                    });
                     dispatch.elementMouseout({
                         data: d
                     });
@@ -296,9 +328,10 @@ nv.models.sunburst = function() {
                     if(d.class) {
                         return d.class
                     } else {
-                        return false;
+                        return "";
                     }
                 });
+
 
             ///Iterating via each and selecting based on the this
             ///makes it work ... a cG.selectAll('path') doesn't.
