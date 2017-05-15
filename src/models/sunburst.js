@@ -253,7 +253,7 @@ nv.models.sunburst = function() {
 
              cGE.append("path")
                     .attr("d", arc)
-                    .style("fill", 'url("#dots-3")')
+                    .style("fill", 'url("#diagonal-stripe-1")')
                     .attr("opacity", function(d) {
                         if(d.class) {
                             return d.class.indexOf('Pending') > -1 ? 0.3 : 0;
@@ -262,7 +262,7 @@ nv.models.sunburst = function() {
                     });
                 cGE.append("path")
                     .attr("d", arc)
-                    .style("fill", 'url("#diagonal-stripe-1")')
+                    .style("fill", 'url("#dots-3")')
                     .attr("opacity", function(d) {
                         if(d.class){
                             return d.class.indexOf('Transit_sub') > -1 ? 0.3 : 0;
