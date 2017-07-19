@@ -15,7 +15,7 @@ nv.models.sunburst = function() {
         , container = null
         , color = nv.utils.defaultColor()
         , showLabels = false
-        , labelFormat = function(d){if(mode === 'count'){return d.name + ' #' + d.value}else{return d.name + ' ' + (d.value || d.size)}}
+        , labelFormat = function(d){if(mode === 'count'){return d.name + ' #' + d.value + " # " + d.depth}else{return d.name + ' ' + (d.value || d.size)}}
         , labelThreshold = 0.02
         , sort = function(d1, d2){return d1.name > d2.name;}
         , key = function(d,i){
@@ -184,12 +184,13 @@ nv.models.sunburst = function() {
                             }
                             else {
                                 var centerAngle = computeCenterAngle(e);
+                                centerAngle = centerAngle + (e.depth > 0 ? (e.depth - 1) : 0) * 5;
                                 var rotation = rotationToAvoidUpsideDown(e);
                                 if (rotation === 0) {
-                                    return 'rotate('+ centerAngle +')translate(' + (y(e.y) + 5) + ',0)';
+                                    return 'rotate('+ centerAngle +')translate(' + y(e.y) + ',0)';
                                 }
                                 else {
-                                    return 'rotate('+ centerAngle +')translate(' + (y(e.y) + width + 5) + ',0)rotate(' + rotation + ')';
+                                    return 'rotate('+ centerAngle +')translate(' + (y(e.y) + width)  + ',0)rotate(' + rotation + ')';
                                 }
                             }
                         });
