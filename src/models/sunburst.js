@@ -185,10 +185,10 @@ nv.models.sunburst = function() {
                             else {
                                 var centerAngle = computeCenterAngle(e);
                                 var deviation = 0;
-                                if(e.depth > 0 && e.depth < 5) {
-                                    deviation = e.depth - 1 * 5;
-                                }  else {
-                                    deviation = 5 - ( e.depth % 5 ) * 3;
+                                if(e.depth > 5) {
+                                    deviation = (6 - e.depth) * 3;
+                                }  else if(e.depth < 6) {
+                                    deviation = (e.depth - 1) * 5;
                                 }
                                  
                                 centerAngle = centerAngle + deviation;
